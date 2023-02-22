@@ -1,5 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateUser } from "../api/user_api";
+import {
+  dehydrate,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { CreateUser, GetUser, GetUserWithOrders } from "../api/user_api";
 
 export function useCreateUser(userdata: any) {
   const queryClient = useQueryClient(); // queryClient는 전역변수이다. react-query로 불러온 모든 query를 관리가능하다.
@@ -19,4 +24,58 @@ export function useCreateUser(userdata: any) {
       console.log("context", context);
     },
   });
+}
+
+export function useGetUser(userId: any) {
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const data = await GetUser(userId);
+      return data;
+    },
+    onError: (e) => {
+      console.log("e", e);
+    },
+  });
+}
+
+export function useGetUserWithOrders(companyId: any) {
+  console.log("companyId", companyId);
+  return useQuery({
+    queryKey: ["usersWithOrders"],
+    queryFn: async () => {
+      const data = await GetUserWithOrders(companyId);
+      return data;
+    },
+    onError: (e) => {
+      console.log("e", e);
+    },
+  });
+}
+
+export async function UseGetUserForStaticProps(userId: any) {
+  const queryClient = useQueryClient(); // queryClient는 전역변수이다. react-query로 불러온 모든 query를 관리가능하다.
+  try {
+    await Promise.all([
+      queryClient.prefetchQuery({
+        queryKey: ["user"],
+        queryFn: async () => {
+          const data = await GetUser(userId);
+          return data;
+        },
+      }),
+    ]);
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  } catch (e) {
+    console.log("index 페이지 try 에러", e);
+    return {
+      notFound: true,
+    };
+  } finally {
+    queryClient.clear();
+  }
 }
