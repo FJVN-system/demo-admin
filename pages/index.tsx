@@ -1,9 +1,4 @@
 import styled from "@emotion/styled";
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
-import { GetUsers } from "../api/user_api";
-import Cart from "../components/cart";
-import Header from "../components/header";
-import { useCreateUser } from "../query/users";
 
 const BodyContainer = styled.div`
   display: flex;
@@ -28,8 +23,6 @@ const BodyContainer = styled.div`
 // }
 // }
 export default function IndexPage() {
-  const { data: usersData } = useQuery(["users"], GetUsers);
-
   return (
     <div>
       <BodyContainer>메인</BodyContainer>

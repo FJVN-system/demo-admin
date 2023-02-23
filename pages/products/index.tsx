@@ -16,10 +16,10 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DebouncedInput from "../../components/tanstackTable/debounceInput";
 import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
-import { ordersListColumns } from "../../components/tanstackTable/columns/ordersList";
 import NavButton from "../../components/tanstackTable/pagiNav";
+import { useGetProducts } from "../../query/product";
 import { GetUser } from "../../api/user_api";
-import { useGetUserWithOrders } from "../../query/users";
+import { productsList } from "../../components/tanstackTable/columns/productsList";
 import SearchSortTable from "../../components/tanstackTable/searchSortTable";
 
 // 스타일 컴포넌트
@@ -29,16 +29,16 @@ const ProductListContainer = styled.div`
   padding: 2px;
 `;
 
-export default function ProductList() {
+export default function Products() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const { data: user } = useQuery(["user"], () => GetUser(22));
-  const { data: productData } = useGetUserWithOrders(user?.companyId);
+  const { data: productData } = useGetProducts(user?.companyId);
 
   // 데이터 초기화
   const data = useMemo(() => productData || [], [productData]);
-  const columns = useMemo<ColumnDef<any, any>[]>(() => ordersListColumns, []);
+  const columns = useMemo<ColumnDef<any, any>[]>(() => productsList, []);
 
   // 테이블 훅
   const table = useReactTable({
@@ -65,7 +65,6 @@ export default function ProductList() {
     debugHeaders: true,
     debugColumns: false,
   });
-
   return (
     <ProductListContainer>
       <DebouncedInput

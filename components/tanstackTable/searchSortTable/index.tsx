@@ -1,8 +1,8 @@
 import { flexRender } from "@tanstack/react-table";
-import Filter from "../../../components/tanstackTable/filter/Filter";
-import OrdersRow from "./ordersRow";
+import ProductRow from "./TableRow";
+// import Filter from "../filter/Filter";
 
-export default function OrdersListTable({ table }: any) {
+export default function SearchSortTable({ table }: any) {
   return (
     <table>
       <thead>
@@ -45,7 +45,7 @@ export default function OrdersListTable({ table }: any) {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row: any) => (
-          <OrdersRow key={row.id} row={row} flexRender={flexRender} />
+          <ProductRow key={row.id} row={row} flexRender={flexRender} />
         ))}
       </tbody>
     </table>

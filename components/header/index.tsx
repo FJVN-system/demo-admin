@@ -33,16 +33,28 @@ export default function Header(): any {
           <Link href="/">MAIN</Link>
         </MenuButton>
         <MenuButton>
-          <Link href="/orders">주문목록</Link>
+          <Link href="/orders">유저주문</Link>
+        </MenuButton>
+        <MenuButton>
+          <Link href="/totalorders">전체주문</Link>
+        </MenuButton>
+        <MenuButton>
+          <Link href="/products">상품목록</Link>
         </MenuButton>
         <MenuButton>
           <Link href="/shippings">배송목록</Link>
         </MenuButton>
         <MenuButton>
-          <Link href="/users">유저목록</Link>
+          <Link href="/users">유저정보</Link>
         </MenuButton>
         <MenuButton>
-          <Link href="/">STORE</Link>
+          <a
+            href="http://fjvn-free-store.s3-website.ap-northeast-2.amazonaws.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            STORE
+          </a>
         </MenuButton>
         <MenuButton>로그아웃</MenuButton>
       </RightContainer>

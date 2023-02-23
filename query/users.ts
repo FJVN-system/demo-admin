@@ -4,7 +4,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { CreateUser, GetUser, GetUserWithOrders } from "../api/user_api";
+import {
+  CreateUser,
+  GetUser,
+  GetUsersByCompany,
+  GetUserWithOrders,
+} from "../api/user_api";
 
 export function useCreateUser(userdata: any) {
   const queryClient = useQueryClient(); // queryClient는 전역변수이다. react-query로 불러온 모든 query를 관리가능하다.
@@ -14,15 +19,13 @@ export function useCreateUser(userdata: any) {
       // useMutation과 궁합이 잘맞는 invalidateQueries이다.
       queryClient.invalidateQueries(["users"]);
     },
-    onError: (e) => {
-      console.log("e", e);
-    },
-    onSettled(data, error, variables, context) {
-      console.log("data", data);
-      console.log("error", error);
-      console.log("variables", variables);
-      console.log("context", context);
-    },
+    onError: (e) => console.log("e", e),
+    // onSettled(data, error, variables, context) {
+    //   console.log("data", data);
+    //   console.log("error", error);
+    //   console.log("variables", variables);
+    //   console.log("context", context);
+    // },
   });
 }
 
@@ -33,14 +36,22 @@ export function useGetUser(userId: any) {
       const data = await GetUser(userId);
       return data;
     },
-    onError: (e) => {
-      console.log("e", e);
+    onError: (e) => console.log("e", e),
+  });
+}
+
+export function useGetUsersByCompanyId(companyId: any) {
+  return useQuery({
+    queryKey: ["usersByCompanyId"],
+    queryFn: async () => {
+      const data = await GetUsersByCompany(companyId);
+      return data;
     },
+    onError: (e) => console.log("e", e),
   });
 }
 
 export function useGetUserWithOrders(companyId: any) {
-  console.log("companyId", companyId);
   return useQuery({
     queryKey: ["usersWithOrders"],
     queryFn: async () => {
@@ -50,6 +61,7 @@ export function useGetUserWithOrders(companyId: any) {
     onError: (e) => {
       console.log("e", e);
     },
+    enabled: !!companyId,
   });
 }
 

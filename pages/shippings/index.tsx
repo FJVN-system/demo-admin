@@ -12,33 +12,36 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import DebouncedInput from "../../../components/tanstackTable/debounceInput";
-import { fuzzyFilter } from "../../../components/tanstackTable/filter/fuzzyFilter";
-import { ordersListColumns } from "../../../components/tanstackTable/columns/ordersListColumns";
-import NavButton from "../../../components/tanstackTable/pagiNav";
-import { GetUser } from "../../../api/user_api";
-import { useGetUserWithOrders } from "../../../query/users";
-import OrdersListTable from "../ordersListTable";
+import DebouncedInput from "../../components/tanstackTable/debounceInput";
+import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
+import NavButton from "../../components/tanstackTable/pagiNav";
+import { GetUser } from "../../api/user_api";
+import SearchSortTable from "../../components/tanstackTable/searchSortTable";
+import { useGetShippingsByCompany } from "../../query/shippings";
+import { shippingsByCompanyList } from "../../components/tanstackTable/columns/shippingsByCompanyList";
 
 // 스타일 컴포넌트
-const OrdersListContainer = styled.div`
+const OrderItemListComtainer = styled.div`
   flex: 0.7;
   background-color: gray;
   padding: 2px;
 `;
 
-export default function OrdersList() {
+export default function Shippings() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const { data: user } = useQuery(["user"], () => GetUser(22));
-  const { data: usersWithOrdersData } = useGetUserWithOrders(user?.companyId);
-  console.log("usersWithOrdersData", usersWithOrdersData);
+  const { data: shippingsData } = useGetShippingsByCompany(user?.companyId);
+
   // 데이터 초기화
-  const data = useMemo(() => usersWithOrdersData || [], [usersWithOrdersData]);
-  const columns = useMemo<ColumnDef<any, any>[]>(() => ordersListColumns, []);
+  const data = useMemo(() => shippingsData || [], [shippingsData]);
+  const columns = useMemo<ColumnDef<any, any>[]>(
+    () => shippingsByCompanyList,
+    [],
+  );
 
   // 테이블 훅
   const table = useReactTable({
@@ -65,24 +68,15 @@ export default function OrdersList() {
     debugHeaders: true,
     debugColumns: false,
   });
-
-  useEffect(() => {
-    if (table.getState().columnFilters[0]?.id === "createdAt") {
-      if (table.getState().sorting[0]?.id !== "createdAt") {
-        table.setSorting([{ id: "createdAt", desc: false }]);
-      }
-    }
-  }, [table.getState().columnFilters[0]?.id]);
-
   return (
-    <OrdersListContainer>
+    <OrderItemListComtainer>
       <DebouncedInput
         value={globalFilter ?? ""}
         onChange={(value: any) => setGlobalFilter(String(value))}
         placeholder="Search all columns..."
       />
-      <OrdersListTable table={table} />
+      <SearchSortTable table={table} />
       <NavButton table={table} />
-    </OrdersListContainer>
+    </OrderItemListComtainer>
   );
 }

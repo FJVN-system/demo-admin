@@ -14,6 +14,13 @@ export async function GetUser(userId: any): Promise<any> {
   return data;
 }
 
+export async function GetUsersByCompany(companyId: any): Promise<any> {
+  const { data } = await axios(
+    `http://fjvn-api-alb-1996066582.ap-northeast-2.elb.amazonaws.com/usersbycompanyid/${companyId}`,
+  );
+  return data;
+}
+
 export async function GetUserWithOrders(companyId: any): Promise<any> {
   const { data } = await axios(
     `http://fjvn-api-alb-1996066582.ap-northeast-2.elb.amazonaws.com/userswithorders/${companyId}`,
