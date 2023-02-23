@@ -54,6 +54,7 @@ export default function Shippings() {
       columnFilters,
       globalFilter,
     },
+    initialState: { pagination: { pageSize: 30 } },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,

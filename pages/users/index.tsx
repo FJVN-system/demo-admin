@@ -19,8 +19,6 @@ import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
 import NavButton from "../../components/tanstackTable/pagiNav";
 import { GetUser } from "../../api/user_api";
 import SearchSortTable from "../../components/tanstackTable/searchSortTable";
-import { useGetShippingsByCompany } from "../../query/shippings";
-import { shippingsByCompanyList } from "../../components/tanstackTable/columns/shippingsByCompanyList";
 import { useGetUsersByCompanyId } from "../../query/users";
 import { usersByCompanyList } from "../../components/tanstackTable/columns/usersByCompanyList";
 
@@ -53,6 +51,7 @@ export default function Users() {
       columnFilters,
       globalFilter,
     },
+    initialState: { pagination: { pageSize: 30 } },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,

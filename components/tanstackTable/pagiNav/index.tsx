@@ -58,7 +58,7 @@ export default function NavButton({ table }: any) {
           </option>
         ))}
       </select>
-      <span> 총 : {table.getRowModel().rows.length} 개</span>
+      <span> 총 : {table.getPrePaginationRowModel().rows.length} 개</span>
     </div>
   );
 }
