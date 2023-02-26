@@ -62,14 +62,17 @@ const TableContainer = styled.div`
 
 const TopButtonContainer = styled.div`
   display: flex;
-  border-bottom: 2px solid rgba(77, 130, 141, 0.5);
+  border-bottom: 2px solid rgba(77, 130, 141, 0.2);
 `;
 
-const TopButton = styled.div`
+const TopButton = styled.div<any>`
   font-size: larger;
   font-weight: 700;
-  color: ${(props: any): any => (props.dd ? "white" : "#2c7580")};
-  padding: 10px 10px;
+  color: ${(props: any): any => (props.dd ? "#30acc0" : "gray")};
+  padding: 5px 10px 15px;
+  margin-bottom: -2px;
+  border-bottom: 2px
+    ${(props: any): any => (props.dd ? "#30acc0" : "transparent")} solid;
 `;
 
 const SearchContainerWrapper = styled.div`
@@ -240,7 +243,7 @@ export default function Orders() {
 
   const { data: user } = useQuery(["user"], () => GetUser(22));
   const { data: ordersData } = useGetOrdersByCompany(user?.companyId);
-  // const { data: productData } = useGetUserWithOrders(user?.companyId);
+  const { data: productData } = useGetUserWithOrders(user?.companyId);
 
   // 데이터 초기화
   const data = useMemo(() => ordersData || [], [ordersData]);
@@ -280,9 +283,33 @@ export default function Orders() {
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
-          <TopButton style={{ color: "lightgray" }}>전체</TopButton>
-          <TopButton>유저별</TopButton>
-          <TopButton>배송완료</TopButton>
+          <TopButton dd>
+            전체
+            <span
+              style={{
+                marginLeft: "5px",
+                backgroundColor: "#245259",
+                padding: "2px 5px",
+                borderRadius: "5px",
+              }}
+            >
+              {table.getPrePaginationRowModel().rows.length}
+            </span>
+          </TopButton>
+          <TopButton>
+            유저별{" "}
+            <span
+              style={{
+                marginLeft: "5px",
+                backgroundColor: "#555555",
+                padding: "2px 5px",
+                borderRadius: "5px",
+              }}
+            >
+              {productData && productData?.length}
+            </span>
+          </TopButton>
+          <TopButton>배송완료 0</TopButton>
         </TopButtonContainer>
         <SearchContainerWrapper>
           <DebouncedInput
