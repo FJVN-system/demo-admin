@@ -16,11 +16,15 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
-import NavButton from "../../components/tanstackTable/pagiNav";
 import { GetUser } from "../../api/user_api";
 import { useGetOrdersByCompany } from "../../query/order";
 import { ordersByCompanyList } from "../../components/tanstackTable/columns/ordersByCompanyList";
 import { useGetUserWithOrders } from "../../query/users";
+import ChevronDownIcon from "../../components/icons/ChevronDownIcon";
+import ChevronUpIcon from "../../components/icons/ChevronUpIcon";
+import Bar3 from "../../components/icons/Bar3";
+import BarArrowUp from "../../components/icons/BarArrowUp";
+import BarArrowDown from "../../components/icons/BarArrowDown";
 
 // 스타일 컴포넌트
 const OrdersComtainer = styled.div`
@@ -53,7 +57,7 @@ const TableContainer = styled.div`
   padding: 30px;
   margin: 40px;
   border-radius: 20px;
-  background-image: linear-gradient(45deg, #1b303d, #174052);
+  background-image: linear-gradient(135deg, #1b303d, #284b5a);
 `;
 
 const TopButtonContainer = styled.div`
@@ -64,8 +68,14 @@ const TopButtonContainer = styled.div`
 const TopButton = styled.div`
   font-size: larger;
   font-weight: 700;
-  color: ${(props: any): any => (props ? "white" : "#2c7580")};
+  color: ${(props: any): any => (props.dd ? "white" : "#2c7580")};
   padding: 10px 10px;
+`;
+
+const SearchContainerWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const SearchContainer = styled.div`
@@ -87,6 +97,20 @@ const SearchInput = styled.input`
   }
 `;
 
+const TotalPerPageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  color: lightgray;
+  font-weight: bold;
+`;
+
+const PerPage = styled.select`
+  height: 25px;
+  margin: 0px 5px;
+  font-size: 18px;
+`;
+
 const Table = styled.table`
   width: 100%;
 `;
@@ -97,8 +121,15 @@ const TableHeader = styled.tr`
   font-size: larger;
 `;
 
-const TableHeaderCell = styled.th`
+const TableHeaderCellWrapper = styled.th`
   padding: 10px 20px;
+`;
+
+const TableHeaderCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 const TableRow = styled.tr`
@@ -118,6 +149,54 @@ const NavButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: 20px 0px;
+`;
+
+const NavButton1 = styled.button`
+  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
+  border: none;
+  border-radius: 10px 0px 0px 10px;
+  height: 22px;
+  font-weight: bold;
+`;
+const NavButton2 = styled.button`
+  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
+  border: none;
+  height: 22px;
+  font-weight: bold;
+`;
+const NavText = styled.span`
+  font-weight: bold;
+  color: white;
+  margin: 0px 5px;
+`;
+const NavInput = styled.input`
+  border: none;
+  outline: none;
+  height: 18px;
+  width: 50px;
+  border: 1px solid rgba(77, 130, 141, 0.5);
+  background-color: beige;
+  margin-right: 5px;
+  color: black;
+  text-align: center;
+  font-size: medium;
+`;
+const NavButton3 = styled.button`
+  background-color: ${(props) => (props.disabled ? "#2c7580" : "gray")};
+  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+  border: none;
+  height: 22px;
+  font-weight: bold;
+`;
+const NavButton4 = styled.button`
+  background-color: ${(props) => (props.disabled ? "#2c7580" : "gray")};
+  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+  border: none;
+  height: 22px;
+  border-radius: 0px 10px 10px 0px;
+  font-weight: bold;
 `;
 
 function DebouncedInput({
@@ -201,28 +280,54 @@ export default function Orders() {
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
-          <TopButton>전체</TopButton>
+          <TopButton style={{ color: "lightgray" }}>전체</TopButton>
           <TopButton>유저별</TopButton>
           <TopButton>배송완료</TopButton>
         </TopButtonContainer>
-        <DebouncedInput
-          value={globalFilter ?? ""}
-          onChange={(value: any) => setGlobalFilter(String(value))}
-          placeholder="Search all columns..."
-        />
+        <SearchContainerWrapper>
+          <DebouncedInput
+            value={globalFilter ?? ""}
+            onChange={(value: any) => setGlobalFilter(String(value))}
+            placeholder="Search all columns..."
+          />
+          <TotalPerPageContainer>
+            <span>
+              {" "}
+              Total : {table.getPrePaginationRowModel().rows.length} 개 / 페이지
+              당{" "}
+            </span>
+            <PerPage
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => {
+                table.setPageSize(Number(e.target.value));
+              }}
+            >
+              {[30, 50, 100].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  {pageSize}
+                </option>
+              ))}
+            </PerPage>
+            개
+          </TotalPerPageContainer>
+        </SearchContainerWrapper>
+
         <Table>
           <thead>
             {table.getHeaderGroups().map((headerGroup: any) => (
               <TableHeader key={headerGroup.id}>
                 {headerGroup.headers.map((header: any) => {
                   return (
-                    <TableHeaderCell key={header.id} colSpan={header.colSpan}>
+                    <TableHeaderCellWrapper
+                      key={header.id}
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder ? null : (
-                        <div
+                        <TableHeaderCell
                           {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
-                              : "",
+                            // className: header.column.getCanSort()
+                            //   ? "cursor-pointer select-none"
+                            //   : "",
                             onClick: header.column.getToggleSortingHandler(),
                           }}
                         >
@@ -231,12 +336,12 @@ export default function Orders() {
                             header.getContext(),
                           )}
                           {{
-                            asc: " 🔼",
-                            desc: " 🔽",
-                          }[header.column.getIsSorted() as string] ?? " <"}
-                        </div>
+                            asc: <BarArrowUp />,
+                            desc: <BarArrowDown />,
+                          }[header.column.getIsSorted() as string] ?? <Bar3 />}
+                        </TableHeaderCell>
                       )}
-                    </TableHeaderCell>
+                    </TableHeaderCellWrapper>
                   );
                 })}
               </TableHeader>
@@ -260,29 +365,26 @@ export default function Orders() {
           </tbody>
         </Table>
         <NavButtonContainer>
-          <button
+          <NavButton1
             type="button"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
-          </button>
-          <button
+          </NavButton1>
+          <NavButton2
             type="button"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<"}
-          </button>
-
+          </NavButton2>
+          <NavText>
+            {table.getState().pagination.pageIndex + 1} page of{" "}
+            {table.getPageCount()}
+          </NavText>
           <span>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} page of{" "}
-              {table.getPageCount()}
-            </strong>
-          </span>
-          <span>
-            <input
+            <NavInput
               type="number"
               defaultValue={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
@@ -291,33 +393,20 @@ export default function Orders() {
               }}
             />
           </span>
-          <button
+          <NavButton3
             type="button"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {">"}
-          </button>
-          <button
+          </NavButton3>
+          <NavButton4
             type="button"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
-          </button>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
-          >
-            {[30, 50, 100].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
-              </option>
-            ))}
-          </select>
-          <span> 총 : {table.getPrePaginationRowModel().rows.length} 개</span>
+          </NavButton4>
         </NavButtonContainer>
       </TableContainer>
     </OrdersComtainer>

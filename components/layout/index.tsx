@@ -15,7 +15,7 @@ const RightContainer = styled.div`
   flex: 0.85;
   display: flex;
   flex-direction: column;
-  background-image: linear-gradient(45deg, #122b35, #0c3740);
+  background-image: linear-gradient(45deg, #16224c, #122c0b);
 `;
 
 export default function Layout({ children }: any) {
