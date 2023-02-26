@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
+import DashBoard from "../components/dashboard";
 
 const BodyContainer = styled.div`
-  display: flex;
+  background-color: green;
 `;
 
 // export async function getStaticProps() {
@@ -24,8 +25,8 @@ const BodyContainer = styled.div`
 // }
 export default function IndexPage() {
   return (
-    <div>
-      <BodyContainer>메인</BodyContainer>
-    </div>
+    <BodyContainer>
+      <DashBoard />
+    </BodyContainer>
   );
 }

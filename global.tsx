@@ -7,7 +7,9 @@ export const globalStyles = (
       body {
         margin: 0;
         background: white;
-        font-family: Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+          Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif Arial,
+          sans-serif, Helvetica;
       }
     `}
   />
