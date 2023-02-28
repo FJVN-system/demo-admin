@@ -40,37 +40,42 @@ const TopContainer = styled.div`
 `;
 
 const MenuName = styled.div`
-  color: white;
-  margin-left: 30px;
+  color: #0f3479;
+  margin-left: 60px;
   font-size: larger;
+  font-weight: bold;
 `;
 
 const UserName = styled.div`
-  color: white;
-  margin-right: 30px;
+  color: #0f3479;
+  font-weight: bold;
+  margin-right: 60px;
   font-size: larger;
 `;
 
 const TableContainer = styled.div`
   padding: 30px;
-  margin: 40px 20px;
+  margin: 20px 40px;
   border-radius: 20px;
-  background-image: linear-gradient(135deg, #1b303d, #284b5a);
+  background-color: #fbfeff;
+  /* background-image: linear-gradient(135deg, #1b303d, #284b5a); */
 `;
 
 const TopButtonContainer = styled.div`
   display: flex;
   border-bottom: 2px solid rgba(77, 130, 141, 0.2);
+  /* justify-content: space-between;
+  align-items: flex-start; */
 `;
 
 const TopButton = styled.div<any>`
   font-size: larger;
   font-weight: 700;
-  color: ${(props: any): any => (props.dd ? "#30acc0" : "gray")};
+  color: ${(props: any): any => (props.dd ? "#2a62ff" : "gray")};
   padding: 5px 10px 15px;
   margin-bottom: -2px;
   border-bottom: 2px
-    ${(props: any): any => (props.dd ? "#30acc0" : "transparent")} solid;
+    ${(props: any): any => (props.dd ? "#2a62ff" : "transparent")} solid;
 `;
 
 const SearchContainerWrapper = styled.div`
@@ -81,7 +86,7 @@ const SearchContainerWrapper = styled.div`
 
 const SearchContainer = styled.div`
   width: 600px;
-  border: 1px solid rgba(77, 130, 141, 0.5);
+  border: 1px solid #1b3d7c;
   border-radius: 20px;
   padding: 10px;
   margin: 15px 0px;
@@ -89,7 +94,7 @@ const SearchContainer = styled.div`
   justify-content: space-between;
 
   > svg {
-    color: rgba(77, 130, 141, 0.7);
+    color: #1b3d7c;
   }
 `;
 const SearchInput = styled.input`
@@ -100,7 +105,7 @@ const SearchInput = styled.input`
   caret-color: white;
   color: white;
   ::placeholder {
-    color: rgba(234, 234, 234, 0.554);
+    color: rgb(161, 161, 161);
   }
 `;
 
@@ -108,7 +113,7 @@ const TotalPerPageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: end;
-  color: lightgray;
+  color: #999bac;
   font-weight: bold;
 `;
 
@@ -116,11 +121,12 @@ const PerPage = styled.select`
   height: 25px;
   margin: 0px 5px;
   font-size: 18px;
-  border-radius: 7px;
+  border-radius: 5px;
   border-color: rgba(77, 130, 141, 0.7);
   background-color: transparent;
-  color: rgba(234, 234, 234, 0.554);
+  color: #1b3d7c;
   outline: none;
+  text-align: center;
 `;
 
 const Table = styled.table`
@@ -128,8 +134,8 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.tr`
-  background-color: #243d4b;
-  color: #ffffff;
+  background-color: #f4f7f9;
+  color: #999bac;
   font-size: 18px;
 `;
 
@@ -154,9 +160,9 @@ const TableCell = styled.td<any>`
   padding: 5px 5px;
   border-bottom: 1px solid rgba(77, 130, 141, 0.2);
   color: ${(props: any) =>
-    props.cell.column.id === "qty" ? "#30acc0" : "#b9b9b9"};
+    props.cell.column.id === "qty" ? "#30acc0" : "#1b3d7c"};
   font-weight: ${(props: any) =>
-    props.cell.column.id === "qty" ? "bold" : ""};
+    props.cell.column.id === "qty" ? "bold" : "bold"};
   font-size: ${(props: any) =>
     props.cell.column.id === "qty" ? "18px" : "15px"};
 `;
@@ -169,49 +175,57 @@ const NavButtonContainer = styled.div`
 `;
 
 const NavButton1 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
+  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
+  color: ${(props) => (props.disabled ? "white" : "lightgray")};
   border: none;
   border-radius: 10px 0px 0px 10px;
   height: 22px;
   font-weight: bold;
 `;
 const NavButton2 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
+  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
+  color: ${(props) => (props.disabled ? "white" : "lightgray")};
   border: none;
   height: 22px;
   font-weight: bold;
 `;
 const NavText = styled.span`
   font-weight: bold;
-  color: white;
+  color: #1b3d7c;
   margin: 0px 5px;
 `;
 const NavInput = styled.input`
   border: 1px solid rgba(77, 130, 141, 0.5);
   /* outline: none; */
-  height: 18px;
+  height: 22px;
   width: 50px;
-  border-radius: 7px;
+  border-radius: 5px;
   margin-right: 5px;
   text-align: center;
   font-size: medium;
   border-color: rgba(77, 130, 141, 0.7);
   background-color: transparent;
-  color: rgba(234, 234, 234, 0.554);
+  color: #1b3d7c;
   outline: none;
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  ::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 const NavButton3 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2c7580" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
   border: none;
   height: 22px;
   font-weight: bold;
 `;
 const NavButton4 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2c7580" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
   border: none;
   height: 22px;
   border-radius: 0px 10px 10px 0px;
@@ -308,6 +322,7 @@ export default function Orders() {
         </TopButtonContainer>
         <SearchContainerWrapper>
           <DebouncedInput
+            justify-contenspace-betweent
             value={globalFilter ?? ""}
             onChange={(value: any) => setGlobalFilter(String(value))}
             placeholder="Search all columns..."
