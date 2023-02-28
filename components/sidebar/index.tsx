@@ -23,9 +23,10 @@ const BottomContainer = styled.div`
 const CompanyName = styled.div`
   width: 100%;
   color: white;
-  font-size: larger;
+  font-size: 23px;
   text-align: center;
   margin: 30px auto;
+
   a {
     text-decoration: none;
     color: inherit;
@@ -34,9 +35,9 @@ const CompanyName = styled.div`
 
 const MenuButton = styled.div`
   width: 100%;
-  color: gray;
-  font-size: larger;
-  margin: 20px 0px 20px 30px;
+  color: #a4a4a4;
+  font-size: large;
+  margin: 20px 0px 20px 40px;
   a {
     text-decoration: none;
     color: inherit;
@@ -52,7 +53,7 @@ export default function Sidebar(): any {
         </CompanyName>
         {/* // TODO 로그인 후 처리 */}
         <MenuButton>
-          <Link href="/">MAIN</Link>
+          <Link href="/">대시보드</Link>
         </MenuButton>
         <MenuButton>
           <Link href="/orders">주문</Link>
@@ -78,7 +79,7 @@ export default function Sidebar(): any {
       </TopContainer>
 
       <BottomContainer>
-        <MenuButton>로그아웃</MenuButton>
+        <MenuButton style={{ fontSize: "14px" }}>로그아웃</MenuButton>
       </BottomContainer>
     </SidebarContainer>
   );

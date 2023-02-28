@@ -20,11 +20,9 @@ import { GetUser } from "../../api/user_api";
 import { useGetOrdersByCompany } from "../../query/order";
 import { ordersByCompanyList } from "../../components/tanstackTable/columns/ordersByCompanyList";
 import { useGetUserWithOrders } from "../../query/users";
-import ChevronDownIcon from "../../components/icons/ChevronDownIcon";
-import ChevronUpIcon from "../../components/icons/ChevronUpIcon";
-import Bar3 from "../../components/icons/Bar3";
-import BarArrowUp from "../../components/icons/BarArrowUp";
-import BarArrowDown from "../../components/icons/BarArrowDown";
+import ArrowUp from "../../components/icons/ArrowUp";
+import Search from "../../components/icons/Search";
+import ArrowDown from "../../components/icons/ArrowDown";
 
 // 스타일 컴포넌트
 const OrdersComtainer = styled.div`
@@ -55,7 +53,7 @@ const UserName = styled.div`
 
 const TableContainer = styled.div`
   padding: 30px;
-  margin: 40px;
+  margin: 40px 20px;
   border-radius: 20px;
   background-image: linear-gradient(135deg, #1b303d, #284b5a);
 `;
@@ -87,6 +85,12 @@ const SearchContainer = styled.div`
   border-radius: 20px;
   padding: 10px;
   margin: 15px 0px;
+  display: flex;
+  justify-content: space-between;
+
+  > svg {
+    color: rgba(77, 130, 141, 0.7);
+  }
 `;
 const SearchInput = styled.input`
   width: 100%;
@@ -96,7 +100,7 @@ const SearchInput = styled.input`
   caret-color: white;
   color: white;
   ::placeholder {
-    color: #e3eff2;
+    color: rgba(234, 234, 234, 0.554);
   }
 `;
 
@@ -112,6 +116,11 @@ const PerPage = styled.select`
   height: 25px;
   margin: 0px 5px;
   font-size: 18px;
+  border-radius: 7px;
+  border-color: rgba(77, 130, 141, 0.7);
+  background-color: transparent;
+  color: rgba(234, 234, 234, 0.554);
+  outline: none;
 `;
 
 const Table = styled.table`
@@ -120,8 +129,8 @@ const Table = styled.table`
 
 const TableHeader = styled.tr`
   background-color: #243d4b;
-  color: lightgray;
-  font-size: larger;
+  color: #ffffff;
+  font-size: 18px;
 `;
 
 const TableHeaderCellWrapper = styled.th`
@@ -138,13 +147,18 @@ const TableHeaderCell = styled.div`
 const TableRow = styled.tr`
   border: 1px;
   background-color: transparent;
-  color: #e3eff2;
   text-align: center;
 `;
 
-const TableCell = styled.td`
-  padding: 10px 5px;
+const TableCell = styled.td<any>`
+  padding: 5px 5px;
   border-bottom: 1px solid rgba(77, 130, 141, 0.2);
+  color: ${(props: any) =>
+    props.cell.column.id === "qty" ? "#30acc0" : "#b9b9b9"};
+  font-weight: ${(props: any) =>
+    props.cell.column.id === "qty" ? "bold" : ""};
+  font-size: ${(props: any) =>
+    props.cell.column.id === "qty" ? "18px" : "15px"};
 `;
 
 const NavButtonContainer = styled.div`
@@ -175,16 +189,18 @@ const NavText = styled.span`
   margin: 0px 5px;
 `;
 const NavInput = styled.input`
-  border: none;
-  outline: none;
+  border: 1px solid rgba(77, 130, 141, 0.5);
+  /* outline: none; */
   height: 18px;
   width: 50px;
-  border: 1px solid rgba(77, 130, 141, 0.5);
-  background-color: beige;
+  border-radius: 7px;
   margin-right: 5px;
-  color: black;
   text-align: center;
   font-size: medium;
+  border-color: rgba(77, 130, 141, 0.7);
+  background-color: transparent;
+  color: rgba(234, 234, 234, 0.554);
+  outline: none;
 `;
 const NavButton3 = styled.button`
   background-color: ${(props) => (props.disabled ? "#2c7580" : "gray")};
@@ -233,6 +249,7 @@ function DebouncedInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+      <Search />
     </SearchContainer>
   );
 }
@@ -284,31 +301,9 @@ export default function Orders() {
       <TableContainer>
         <TopButtonContainer>
           <TopButton dd>
-            전체
-            <span
-              style={{
-                marginLeft: "5px",
-                backgroundColor: "#245259",
-                padding: "2px 5px",
-                borderRadius: "5px",
-              }}
-            >
-              {table.getPrePaginationRowModel().rows.length}
-            </span>
+            전체 {table.getPrePaginationRowModel().rows.length}
           </TopButton>
-          <TopButton>
-            유저별{" "}
-            <span
-              style={{
-                marginLeft: "5px",
-                backgroundColor: "#555555",
-                padding: "2px 5px",
-                borderRadius: "5px",
-              }}
-            >
-              {productData && productData?.length}
-            </span>
-          </TopButton>
+          <TopButton>유저별 {productData && productData?.length}</TopButton>
           <TopButton>배송완료 0</TopButton>
         </TopButtonContainer>
         <SearchContainerWrapper>
@@ -358,14 +353,18 @@ export default function Orders() {
                             onClick: header.column.getToggleSortingHandler(),
                           }}
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          <div style={{ marginRight: "10px" }}>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                          </div>
                           {{
-                            asc: <BarArrowUp />,
-                            desc: <BarArrowDown />,
-                          }[header.column.getIsSorted() as string] ?? <Bar3 />}
+                            asc: <ArrowDown />,
+                            desc: <ArrowUp />,
+                          }[header.column.getIsSorted() as string] ?? (
+                            <ArrowDown />
+                          )}
                         </TableHeaderCell>
                       )}
                     </TableHeaderCellWrapper>
@@ -379,7 +378,7 @@ export default function Orders() {
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell: any) => {
                   return (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} cell={cell}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
