@@ -31,33 +31,33 @@ const ProductListContainer = styled.div`
 `;
 
 const TopContainer = styled.div`
-  flex: 0.05;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 30px;
+  align-items: flex-start;
+  padding-top: 40px;
+  background-color: #0f3479;
+  height: 100px;
 `;
 
 const MenuName = styled.div`
-  color: #0f3479;
+  color: #fbfeff;
   margin-left: 60px;
   font-size: larger;
   font-weight: bold;
 `;
 
 const UserName = styled.div`
-  color: #0f3479;
+  color: #fbfeff;
   font-weight: bold;
   margin-right: 60px;
   font-size: larger;
 `;
 
 const TableContainer = styled.div`
-  padding: 30px;
-  margin: 20px 40px;
-  border-radius: 20px;
+  padding: 15px 20px;
+  margin: -50px 40px 10px;
+  border-radius: 10px;
   background-color: #fbfeff;
-  /* background-image: linear-gradient(135deg, #1b303d, #284b5a); */
 `;
 
 const TopButtonContainer = styled.div`
@@ -320,6 +320,7 @@ export default function Products() {
             <TopButton>PHOTOBOOK 0</TopButton>
           </div>
           <button
+            type="button"
             style={{
               backgroundColor: "#2a62ff",
               color: "white",

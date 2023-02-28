@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import DashBoard from "../components/dashboard";
 
 const BodyContainer = styled.div`
-  background-color: green;
+  /* background-color: green; */
 `;
 
 // export async function getStaticProps() {
