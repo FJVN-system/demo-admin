@@ -61,7 +61,11 @@ export default function Sidebar(): any {
         <MenuButton selected={router.asPath === "/"}>
           <Link href="/">대시보드</Link>
         </MenuButton>
-        <MenuButton selected={router.asPath === "/orders/"}>
+        <MenuButton
+          selected={
+            router.asPath === "/orders/" || router.asPath === "/ordersbyuser/"
+          }
+        >
           <Link href="/orders">주문</Link>
         </MenuButton>
         <MenuButton selected={router.asPath === "/products/"}>

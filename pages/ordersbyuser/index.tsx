@@ -24,6 +24,7 @@ import { useGetUserWithOrders } from "../../query/users";
 import ArrowUp from "../../components/icons/ArrowUp";
 import Search from "../../components/icons/Search";
 import ArrowDown from "../../components/icons/ArrowDown";
+import { ordersListColumns } from "../../components/tanstackTable/columns/ordersList";
 
 // 스타일 컴포넌트
 const OrdersComtainer = styled.div`
@@ -273,10 +274,10 @@ export default function Orders() {
   const { data: user } = useQuery(["user"], () => GetUser(22));
   const { data: ordersData } = useGetOrdersByCompany(user?.companyId);
   const { data: productData } = useGetUserWithOrders(user?.companyId);
-
+  console.log("productData", productData);
   // 데이터 초기화
-  const data = useMemo(() => ordersData || [], [ordersData]);
-  const columns = useMemo<ColumnDef<any, any>[]>(() => ordersByCompanyList, []);
+  const data = useMemo(() => productData || [], [productData]);
+  const columns = useMemo<ColumnDef<any, any>[]>(() => ordersListColumns, []);
 
   // 테이블 훅
   const table = useReactTable({
@@ -312,12 +313,12 @@ export default function Orders() {
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
-          <TopButton dd>
+          <TopButton>
             <Link href="/orders">
               전체 {table.getPrePaginationRowModel().rows.length}
             </Link>
           </TopButton>
-          <TopButton>
+          <TopButton dd>
             <Link href="/ordersbyuser">
               유저별 {productData && productData?.length}
             </Link>
