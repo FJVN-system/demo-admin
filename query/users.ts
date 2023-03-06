@@ -20,6 +20,7 @@ export function useCreateUser(userdata: any) {
       queryClient.invalidateQueries(["users"]);
     },
     onError: (e) => console.log("e", e),
+
     // onSettled(data, error, variables, context) {
     //   console.log("data", data);
     //   console.log("error", error);
@@ -37,6 +38,7 @@ export function useGetUser(userId: any) {
       return data;
     },
     onError: (e) => console.log("e", e),
+    enabled: !!userId,
   });
 }
 
@@ -48,6 +50,7 @@ export function useGetUsersByCompanyId(companyId: any) {
       return data;
     },
     onError: (e) => console.log("e", e),
+    enabled: !!companyId,
   });
 }
 

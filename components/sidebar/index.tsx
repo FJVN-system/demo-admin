@@ -1,7 +1,9 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { GetUser } from "../../api/user_api";
 
 const SidebarContainer = styled.div`
   height: 100vh;
@@ -42,6 +44,7 @@ const MenuButton = styled.div<any>`
   font-size: larger;
   background-color: ${(props) => (props.selected ? "#eff6fd" : "")};
   margin: 20px 0px 20px 40px;
+
   a {
     text-decoration: none;
     color: inherit;
@@ -50,42 +53,52 @@ const MenuButton = styled.div<any>`
 
 export default function Sidebar(): any {
   const router = useRouter();
+  const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
 
   return (
     <SidebarContainer>
       <TopContainer>
-        <CompanyName>
-          <Link href="/">회사이름</Link>
-        </CompanyName>
+        {!isLoading && (
+          <CompanyName>
+            <Link href="/">{user.companyName}</Link>
+          </CompanyName>
+        )}
+
         {/* // TODO 로그인 후 처리 */}
-        <MenuButton selected={router.asPath === "/"}>
-          <Link href="/">대시보드</Link>
-        </MenuButton>
-        <MenuButton
-          selected={
-            router.asPath === "/orders/" || router.asPath === "/ordersbyuser/"
-          }
-        >
-          <Link href="/orders">주문</Link>
-        </MenuButton>
-        <MenuButton selected={router.asPath === "/products/"}>
-          <Link href="/products">상품</Link>
-        </MenuButton>
-        <MenuButton selected={router.asPath === "/shippings/"}>
-          <Link href="/shippings">배송</Link>
-        </MenuButton>
-        <MenuButton selected={router.asPath === "/users/"}>
-          <Link href="/users">유저</Link>
-        </MenuButton>
-        <MenuButton>
-          <a
-            href="http://fjvn-free-store.s3-website.ap-northeast-2.amazonaws.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            STORE
-          </a>
-        </MenuButton>
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <MenuButton selected={router.asPath === "/"}>대시보드</MenuButton>
+        </Link>
+        <Link href="/orders" style={{ textDecoration: "none" }}>
+          <MenuButton selected={router.asPath.includes("/orders/")}>
+            주문
+          </MenuButton>
+        </Link>
+
+        <Link href="/products" style={{ textDecoration: "none" }}>
+          <MenuButton selected={router.asPath === "/products/"}>
+            상품
+          </MenuButton>
+        </Link>
+
+        <Link href="/shippings" style={{ textDecoration: "none" }}>
+          <MenuButton selected={router.asPath === "/shippings/"}>
+            배송
+          </MenuButton>
+        </Link>
+        <Link href="/users" style={{ textDecoration: "none" }}>
+          <MenuButton selected={router.asPath === "/users/"}>유저</MenuButton>
+        </Link>
+        {!isLoading && (
+          <MenuButton>
+            <a
+              href={`${user.storeUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              STORE
+            </a>
+          </MenuButton>
+        )}
       </TopContainer>
 
       <BottomContainer>

@@ -16,15 +16,15 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
-import { GetUser } from "../../api/user_api";
-import { useGetOrdersByCompany } from "../../query/order";
-import { ordersByCompanyList } from "../../components/tanstackTable/columns/ordersByCompanyList";
-import { useGetUserWithOrders } from "../../query/users";
-import ArrowUp from "../../components/icons/ArrowUp";
-import Search from "../../components/icons/Search";
-import ArrowDown from "../../components/icons/ArrowDown";
-import { ordersListColumns } from "../../components/tanstackTable/columns/ordersList";
+import { useRouter } from "next/router";
+import { fuzzyFilter } from "../../../components/tanstackTable/filter/fuzzyFilter";
+import { GetUser } from "../../../api/user_api";
+import { useGetOrdersByCompany } from "../../../query/order";
+import { useGetUserWithOrders } from "../../../query/users";
+import ArrowUp from "../../../components/icons/ArrowUp";
+import Search from "../../../components/icons/Search";
+import ArrowDown from "../../../components/icons/ArrowDown";
+import { ordersListColumns } from "../../../components/tanstackTable/columns/ordersList";
 
 // 스타일 컴포넌트
 const OrdersComtainer = styled.div`
@@ -70,11 +70,15 @@ const TopButtonContainer = styled.div`
 const TopButton = styled.div<any>`
   font-size: larger;
   font-weight: 700;
-  color: ${(props: any): any => (props.dd ? "#2a62ff" : "gray")};
+  color: ${(props: any): any => (props.selected ? "#2a62ff" : "gray")};
   padding: 5px 10px 15px;
   margin-bottom: -2px;
   border-bottom: 2px
-    ${(props: any): any => (props.dd ? "#2a62ff" : "transparent")} solid;
+    ${(props: any): any => (props.selected ? "#2a62ff" : "transparent")} solid;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 const SearchContainerWrapper = styled.div`
@@ -268,10 +272,12 @@ function DebouncedInput({
 }
 
 export default function Orders() {
+  const router = useRouter();
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: user } = useQuery(["user"], () => GetUser(22));
+  const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
   const { data: ordersData } = useGetOrdersByCompany(user?.companyId);
   const { data: productData } = useGetUserWithOrders(user?.companyId);
   console.log("productData", productData);
@@ -308,8 +314,12 @@ export default function Orders() {
   return (
     <OrdersComtainer>
       <TopContainer>
-        <MenuName>ORDERS</MenuName>
-        <UserName>유저이름</UserName>
+        <MenuName>주문목록</MenuName>
+        {!isLoading && (
+          <UserName>
+            {user.companyName}-{user.userName}
+          </UserName>
+        )}
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
@@ -318,17 +328,17 @@ export default function Orders() {
               전체 {table.getPrePaginationRowModel().rows.length}
             </Link>
           </TopButton>
-          <TopButton dd>
+          <TopButton selected={router.asPath.includes("/ordersbyuser/")}>
             <Link href="/ordersbyuser">
               유저별 {productData && productData?.length}
             </Link>
           </TopButton>
-          <TopButton>
+          {/* <TopButton>
             <Link href="/orders">
               배송완료
               {productData && productData?.length}
             </Link>
-          </TopButton>
+          </TopButton> */}
         </TopButtonContainer>
         <SearchContainerWrapper>
           <DebouncedInput

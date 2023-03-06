@@ -22,6 +22,7 @@ import { shippingsByCompanyList } from "../../components/tanstackTable/columns/s
 import Search from "../../components/icons/Search";
 import ArrowDown from "../../components/icons/ArrowDown";
 import ArrowUp from "../../components/icons/ArrowUp";
+import ShippingItems from "./shippingitem";
 
 // 스타일 컴포넌트
 const OrderItemListComtainer = styled.div`
@@ -157,51 +158,37 @@ const TableRow = styled.tr`
 const TableCell = styled.td<any>`
   padding: 5px 5px;
   border-bottom: 1px solid rgba(77, 130, 141, 0.2);
-  color: ${(props: any) =>
-    props.cell.column.id === "qty" ? "#30acc0" : "#1b3d7c"};
-  font-weight: ${(props: any) =>
-    props.cell.column.id === "qty" ? "bold" : "bold"};
-  font-size: ${(props: any) =>
-    props.cell.column.id === "qty" ? "18px" : "15px"};
+  color: #1b3d7c;
+  font-weight: bold;
 `;
 
 const NavButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px 0px;
+  margin-top: 15px;
 `;
 
-const NavButton1 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+const NavButton = styled.button`
+  background-color: ${(props) => (props.disabled ? "gray" : "#152b7b")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
   border: none;
-  border-radius: 10px 0px 0px 10px;
-  height: 22px;
+  height: 26px;
+  width: 30px;
   font-weight: bold;
 `;
-const NavButton2 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
-  border: none;
-  height: 22px;
-  font-weight: bold;
-`;
+
 const NavText = styled.span`
   font-weight: bold;
   color: #1b3d7c;
   margin: 0px 5px;
 `;
 const NavInput = styled.input`
-  border: 1px solid rgba(77, 130, 141, 0.5);
-  /* outline: none; */
+  border: 1px solid lightgray;
   height: 22px;
   width: 50px;
-  border-radius: 5px;
-  margin-right: 5px;
   text-align: center;
   font-size: medium;
-  border-color: rgba(77, 130, 141, 0.7);
   background-color: transparent;
   color: #1b3d7c;
   outline: none;
@@ -214,21 +201,17 @@ const NavInput = styled.input`
     margin: 0;
   }
 `;
-const NavButton3 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
+
+const ShippingDetail = styled.button`
   border: none;
-  height: 22px;
-  font-weight: bold;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 5px;
+  background-color: #152b7b;
+  color: #ffffff;
+  cursor: pointer;
 `;
-const NavButton4 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
-  border: none;
-  height: 22px;
-  border-radius: 0px 10px 10px 0px;
-  font-weight: bold;
-`;
+
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -269,9 +252,13 @@ export default function Shippings() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: user } = useQuery(["user"], () => GetUser(22));
+  const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
   const { data: shippingsData } = useGetShippingsByCompany(user?.companyId);
 
+  const [shippingDetaile, setShippingDetaile] = useState(false);
+  const handlerShippingDetaile = () => {
+    setShippingDetaile(!shippingDetaile);
+  };
   // 데이터 초기화
   const data = useMemo(() => shippingsData || [], [shippingsData]);
   const columns = useMemo<ColumnDef<any, any>[]>(
@@ -308,17 +295,21 @@ export default function Shippings() {
   return (
     <OrderItemListComtainer>
       <TopContainer>
-        <MenuName>Shipping</MenuName>
-        <UserName>유저이름</UserName>
+        <MenuName>배송현황</MenuName>
+        {!isLoading && (
+          <UserName>
+            {user.companyName}-{user.userName}
+          </UserName>
+        )}{" "}
       </TopContainer>
       <TableContainer>
-        <TopButtonContainer>
+        {/* <TopButtonContainer>
           <TopButton dd>
             전체 {table.getPrePaginationRowModel().rows.length}
           </TopButton>
           <TopButton>ㅇ 2</TopButton>
           <TopButton>PHOTOBOOK 0</TopButton>
-        </TopButtonContainer>
+        </TopButtonContainer> */}
         <SearchContainerWrapper>
           <DebouncedInput
             value={globalFilter ?? ""}
@@ -398,25 +389,34 @@ export default function Shippings() {
                     </TableCell>
                   );
                 })}
+                <TableCell>
+                  <ShippingDetail
+                    type="button"
+                    onClick={handlerShippingDetaile}
+                  >
+                    배송상품내용
+                  </ShippingDetail>
+                </TableCell>
+                {shippingDetaile && <ShippingItems />}
               </TableRow>
             ))}
           </tbody>
         </Table>
         <NavButtonContainer>
-          <NavButton1
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
-          </NavButton1>
-          <NavButton2
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<"}
-          </NavButton2>
+          </NavButton>
           <NavText>
             {table.getState().pagination.pageIndex + 1} page of{" "}
             {table.getPageCount()}
@@ -431,20 +431,20 @@ export default function Shippings() {
               }}
             />
           </span>
-          <NavButton3
+          <NavButton
             type="button"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {">"}
-          </NavButton3>
-          <NavButton4
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
-          </NavButton4>
+          </NavButton>
         </NavButtonContainer>
       </TableContainer>
     </OrderItemListComtainer>

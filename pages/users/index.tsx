@@ -170,39 +170,29 @@ const NavButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px 0px;
+  margin-top: 15px;
 `;
 
-const NavButton1 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+const NavButton = styled.button`
+  background-color: ${(props) => (props.disabled ? "gray" : "#152b7b")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
   border: none;
-  border-radius: 10px 0px 0px 10px;
-  height: 22px;
+  height: 26px;
+  width: 30px;
   font-weight: bold;
 `;
-const NavButton2 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
-  border: none;
-  height: 22px;
-  font-weight: bold;
-`;
+
 const NavText = styled.span`
   font-weight: bold;
   color: #1b3d7c;
   margin: 0px 5px;
 `;
 const NavInput = styled.input`
-  border: 1px solid rgba(77, 130, 141, 0.5);
-  /* outline: none; */
+  border: 1px solid lightgray;
   height: 22px;
   width: 50px;
-  border-radius: 5px;
-  margin-right: 5px;
   text-align: center;
   font-size: medium;
-  border-color: rgba(77, 130, 141, 0.7);
   background-color: transparent;
   color: #1b3d7c;
   outline: none;
@@ -215,21 +205,7 @@ const NavInput = styled.input`
     margin: 0;
   }
 `;
-const NavButton3 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
-  border: none;
-  height: 22px;
-  font-weight: bold;
-`;
-const NavButton4 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
-  border: none;
-  height: 22px;
-  border-radius: 0px 10px 10px 0px;
-  font-weight: bold;
-`;
+
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -269,7 +245,7 @@ export default function Users() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: user } = useQuery(["user"], () => GetUser(22));
+  const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
   const { data: usersData } = useGetUsersByCompanyId(user?.companyId);
 
   // 데이터 초기화
@@ -305,15 +281,19 @@ export default function Users() {
   return (
     <OrderItemListComtainer>
       <TopContainer>
-        <MenuName>PRODUCTS</MenuName>
-        <UserName>유저이름</UserName>
+        <MenuName>유저</MenuName>
+        {!isLoading && (
+          <UserName>
+            {user.companyName}-{user.userName}
+          </UserName>
+        )}{" "}
       </TopContainer>
       <TableContainer>
-        <TopButtonContainer>
+        {/* <TopButtonContainer>
           <TopButton dd>
             전체 {table.getPrePaginationRowModel().rows.length}
           </TopButton>
-        </TopButtonContainer>
+        </TopButtonContainer> */}
         <SearchContainerWrapper>
           <DebouncedInput
             value={globalFilter ?? ""}
@@ -398,20 +378,20 @@ export default function Users() {
           </tbody>
         </Table>
         <NavButtonContainer>
-          <NavButton1
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
-          </NavButton1>
-          <NavButton2
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<"}
-          </NavButton2>
+          </NavButton>
           <NavText>
             {table.getState().pagination.pageIndex + 1} page of{" "}
             {table.getPageCount()}
@@ -426,20 +406,20 @@ export default function Users() {
               }}
             />
           </span>
-          <NavButton3
+          <NavButton
             type="button"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {">"}
-          </NavButton3>
-          <NavButton4
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
-          </NavButton4>
+          </NavButton>
         </NavButtonContainer>
       </TableContainer>
     </OrderItemListComtainer>

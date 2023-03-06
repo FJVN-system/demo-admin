@@ -67,6 +67,18 @@ const TopButtonContainer = styled.div`
   align-items: flex-start;
 `;
 
+const ProductButton = styled.button`
+  background-color: #2a62ff;
+  color: white;
+  outline: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+`;
+
 const TopButton = styled.div<any>`
   font-size: larger;
   font-weight: 700;
@@ -101,8 +113,9 @@ const SearchInput = styled.input`
   background-color: transparent;
   border: none;
   outline: none;
-  caret-color: white;
-  color: white;
+  /* caret-color: white; */
+  padding-left: 10px;
+  /* color: white; */
   ::placeholder {
     color: rgb(161, 161, 161);
   }
@@ -170,39 +183,29 @@ const NavButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px 0px;
+  margin-top: 15px;
 `;
 
-const NavButton1 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
+const NavButton = styled.button`
+  background-color: ${(props) => (props.disabled ? "gray" : "#152b7b")};
+  color: ${(props) => (props.disabled ? "lightgray" : "white")};
   border: none;
-  border-radius: 10px 0px 0px 10px;
-  height: 22px;
+  height: 26px;
+  width: 30px;
   font-weight: bold;
 `;
-const NavButton2 = styled.button`
-  background-color: ${(props) => (props.disabled ? "#2a62ff" : "gray")};
-  color: ${(props) => (props.disabled ? "white" : "lightgray")};
-  border: none;
-  height: 22px;
-  font-weight: bold;
-`;
+
 const NavText = styled.span`
   font-weight: bold;
   color: #1b3d7c;
   margin: 0px 5px;
 `;
 const NavInput = styled.input`
-  border: 1px solid rgba(77, 130, 141, 0.5);
-  /* outline: none; */
+  border: 1px solid lightgray;
   height: 22px;
   width: 50px;
-  border-radius: 5px;
-  margin-right: 5px;
   text-align: center;
   font-size: medium;
-  border-color: rgba(77, 130, 141, 0.7);
   background-color: transparent;
   color: #1b3d7c;
   outline: none;
@@ -215,21 +218,7 @@ const NavInput = styled.input`
     margin: 0;
   }
 `;
-const NavButton3 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
-  border: none;
-  height: 22px;
-  font-weight: bold;
-`;
-const NavButton4 = styled.button`
-  background-color: ${(props) => (props.disabled ? "gray" : "#2c7580")};
-  color: ${(props) => (props.disabled ? "lightgray" : "white")};
-  border: none;
-  height: 22px;
-  border-radius: 0px 10px 10px 0px;
-  font-weight: bold;
-`;
+
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -270,7 +259,7 @@ export default function Products() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: user } = useQuery(["user"], () => GetUser(22));
+  const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
   const { data: productData } = useGetProducts(user?.companyId);
 
   // 데이터 초기화
@@ -306,33 +295,26 @@ export default function Products() {
   return (
     <ProductListContainer>
       <TopContainer>
-        <MenuName>PRODUCTS</MenuName>
-        <UserName>유저이름</UserName>
+        <MenuName>상품목록</MenuName>
+        {!isLoading && (
+          <UserName>
+            {user.companyName}-{user.userName}
+          </UserName>
+        )}{" "}
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
           <div style={{ display: "flex" }}>
-            <TopButton dd>
+            <ProductButton type="button">상품추가</ProductButton>
+            <ProductButton type="button">상품삭제</ProductButton>
+            <ProductButton type="button">상품삭제</ProductButton>
+            {/* <TopButton dd>
               전체 {table.getPrePaginationRowModel().rows.length}
             </TopButton>
             <TopButton dd>CD 2</TopButton>
             <TopButton>GOODS {productData && productData?.length}</TopButton>
-            <TopButton>PHOTOBOOK 0</TopButton>
+            <TopButton>PHOTOBOOK 0</TopButton> */}
           </div>
-          <button
-            type="button"
-            style={{
-              backgroundColor: "#2a62ff",
-              color: "white",
-              outline: "none",
-              border: "none",
-              padding: "10px 20px",
-              fontSize: "15px",
-              borderRadius: "10px",
-            }}
-          >
-            상품추가
-          </button>
         </TopButtonContainer>
         <SearchContainerWrapper>
           <DebouncedInput
@@ -418,20 +400,20 @@ export default function Products() {
           </tbody>
         </Table>
         <NavButtonContainer>
-          <NavButton1
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
-          </NavButton1>
-          <NavButton2
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<"}
-          </NavButton2>
+          </NavButton>
           <NavText>
             {table.getState().pagination.pageIndex + 1} page of{" "}
             {table.getPageCount()}
@@ -446,20 +428,20 @@ export default function Products() {
               }}
             />
           </span>
-          <NavButton3
+          <NavButton
             type="button"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {">"}
-          </NavButton3>
-          <NavButton4
+          </NavButton>
+          <NavButton
             type="button"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
-          </NavButton4>
+          </NavButton>
         </NavButtonContainer>
       </TableContainer>
     </ProductListContainer>
