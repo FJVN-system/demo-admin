@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchOrder, GetOrdersByCompanyId } from "../api/orders_api";
+import { fetchOrder, GetOrders, GetOrdersByCompanyId } from "../api/orders_api";
 
 /**
  * @param userId
@@ -30,5 +30,19 @@ export const useGetOrdersByCompany = (companyId: any) => {
       console.log("e", e);
     },
     enabled: !!companyId,
+  });
+};
+
+export const useGetOrdersByCompanyUser = (companyId: any, userId: any) => {
+  return useQuery({
+    queryKey: ["ordersItems"],
+    queryFn: async () => {
+      const data = await GetOrders(companyId, userId);
+      return data;
+    },
+    onError: (e) => {
+      console.log("e", e);
+    },
+    enabled: !!companyId && !!userId,
   });
 };

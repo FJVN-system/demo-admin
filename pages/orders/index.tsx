@@ -289,7 +289,7 @@ export default function Orders() {
   return (
     <OrdersComtainer>
       <TopContainer>
-        <MenuName>주문목록</MenuName>
+        <MenuName>전체 주문목록</MenuName>
         {!isLoading && (
           <UserName>
             {user.companyName}-{user.userName}
