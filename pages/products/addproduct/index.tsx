@@ -2,7 +2,9 @@ import styled from "@emotion/styled";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { GetUser } from "../../../api/user_api";
-import { useGetArtists } from "../../../query/artist";
+import { useCreateArtist, useGetArtists } from "../../../query/artist";
+import { useCreateCategory, useGetCategory } from "../../../query/category";
+import { useCreateEnt, useGetEnt } from "../../../query/ent";
 import { useCreateProduct } from "../../../query/product";
 
 const AddProductContainer = styled.div``;
@@ -40,6 +42,20 @@ const AddProductInput = styled.input``;
 const AddProductSelect = styled.select``;
 const AddProductOption = styled.option``;
 
+const AddButton = styled.button`
+  background-color: #2a62ff;
+  color: white;
+  outline: none;
+  border: none;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+`;
 const ProductButton = styled.button`
   background-color: #2a62ff;
   color: white;
@@ -70,6 +86,12 @@ export default function AddProduct() {
     stock: "",
     thumb: "",
     weight: "",
+    artist: "",
+    category: "",
+    ent: "",
+    addArtist: "",
+    addCategory: "",
+    addEnt: "",
   });
 
   const {
@@ -84,6 +106,12 @@ export default function AddProduct() {
     stock,
     thumb,
     weight,
+    artist,
+    category,
+    ent,
+    addArtist,
+    addCategory,
+    addEnt,
   } = inputs;
 
   const onChange = (e: any) => {
@@ -95,16 +123,86 @@ export default function AddProduct() {
 
     setInputs(nextInputs);
   };
+  const onReset = () => {
+    setInputs({
+      title: "",
+      barcode: "",
+      price: "",
+      desc: "",
+      purchase: "",
+      deadline: "",
+      release: "",
+      sku: "",
+      stock: "",
+      thumb: "",
+      weight: "",
+      artist: "",
+      category: "",
+      ent: "",
+      addArtist: "",
+      addCategory: "",
+      addEnt: "",
+    });
+  };
   const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
   const {
     data: artistData,
     isLoading: isArtistLoading,
     isSuccess: isArtistSuccess,
   } = useGetArtists(user?.companyId);
-  console.log("artistData", artistData);
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    isSuccess: isCategorySuccess,
+  } = useGetCategory(user?.companyId);
+  const {
+    data: entData,
+    isLoading: isEntLoading,
+    isSuccess: isEntSuccess,
+  } = useGetEnt(user?.companyId);
 
   const productMutate = useCreateProduct(user?.companyId, inputs);
+  const artistMutate = useCreateArtist(user?.companyId, {
+    artistName: addArtist,
+    companyId: user?.companyId,
+  });
+  const categoryMutate = useCreateCategory(user?.companyId, {
+    categoryName: addCategory,
+    companyId: user?.companyId,
+  });
+  const entMutate = useCreateEnt(user?.companyId, {
+    entName: addEnt,
+    companyId: user?.companyId,
+  });
 
+  const handleAddOnSubmit = (e: any) => {
+    e.preventDefault();
+    const con = window.confirm("추가 하시겠습니까?");
+    if (con) {
+      if (e.target.name === "addArtist") {
+        if (addArtist.length < 1) {
+          alert("추가할 가수의 이름을 작성해 주세요.");
+        } else {
+          artistMutate.mutateAsync();
+          onReset();
+        }
+      } else if (e.target.name === "addCategory") {
+        if (addCategory.length < 1) {
+          alert("추가할 카테고리 이름을 작성해 주세요.");
+        } else {
+          categoryMutate.mutateAsync();
+          onReset();
+        }
+      } else if (e.target.name === "addEnt") {
+        if (addEnt.length < 1) {
+          alert("추가할 소속사 이름을 작성해 주세요.");
+        } else {
+          entMutate.mutateAsync();
+          onReset();
+        }
+      }
+    }
+  };
   const handleOnSubmit = (e: any) => {
     e.preventDefault();
     const con = window.confirm("추가 하시겠습니까?");
@@ -120,28 +218,16 @@ export default function AddProduct() {
         stock.length < 1 ||
         price.length < 1 ||
         purchase.length < 1 ||
-        weight.length < 1
+        weight.length < 1 ||
+        artist.length < 1 ||
+        category.length < 1 ||
+        ent.length < 1
       ) {
         alert("빈칸이 없어야함");
       } else {
         productMutate.mutateAsync();
       }
     }
-  };
-  const onReset = () => {
-    setInputs({
-      title: "",
-      barcode: "",
-      price: "",
-      desc: "",
-      purchase: "",
-      deadline: "",
-      release: "",
-      sku: "",
-      stock: "",
-      thumb: "",
-      weight: "",
-    });
   };
 
   useEffect(() => {
@@ -284,37 +370,96 @@ export default function AddProduct() {
           {/* TODO api get 요청 만든 후 작업 */}
           <AddProductInputContainer>
             <AddProductInputText>가수</AddProductInputText>
-            <AddProductSelect>
+            <AddProductSelect name="artist" onChange={onChange} value={artist}>
+              <AddProductOption value="">필수선택</AddProductOption>
               {!isArtistLoading &&
                 isArtistSuccess &&
-                artistData?.map((artist: any, i: any) => {
+                artistData?.map((artistLi: any) => {
                   return (
-                    <AddProductOption key={`${i + 1}-a`}>
-                      {artist.artistName}
+                    <AddProductOption key={artistLi.id} value={artistLi.id}>
+                      {artistLi.artistName}
                     </AddProductOption>
                   );
                 })}
             </AddProductSelect>
-            <AddProductInput />
+            <AddProductInput
+              placeholder="가수 추가"
+              style={{ marginLeft: "50px" }}
+              name="addArtist"
+              onChange={onChange}
+              value={addArtist}
+            />
+            <AddButton
+              name="addArtist"
+              type="button"
+              onClick={(e) => handleAddOnSubmit(e)}
+            >
+              추가하기
+            </AddButton>
           </AddProductInputContainer>
-          {/* <AddProductInputContainer>
+
+          <AddProductInputContainer>
             <AddProductInputText>카테고리</AddProductInputText>
-            <AddProductSelect>
-              <AddProductOption>음반</AddProductOption>
-              <AddProductOption>굿즈</AddProductOption>
-              <AddProductOption>기타</AddProductOption>
+            <AddProductSelect
+              name="category"
+              onChange={onChange}
+              value={category}
+            >
+              <AddProductOption value="">필수선택</AddProductOption>
+              {!isCategoryLoading &&
+                isCategorySuccess &&
+                categoryData?.map((categoryLi: any) => {
+                  return (
+                    <AddProductOption key={categoryLi.id} value={categoryLi.id}>
+                      {categoryLi.categoryName}
+                    </AddProductOption>
+                  );
+                })}
             </AddProductSelect>
-            <AddProductInput />
+            <AddProductInput
+              placeholder="카테고리 추가"
+              style={{ marginLeft: "50px" }}
+              name="addCategory"
+              onChange={onChange}
+              value={addCategory}
+            />
+            <AddButton
+              name="addCategory"
+              type="button"
+              onClick={(e) => handleAddOnSubmit(e)}
+            >
+              추가하기
+            </AddButton>
           </AddProductInputContainer>
           <AddProductInputContainer>
             <AddProductInputText>엔터</AddProductInputText>
-            <AddProductSelect>
-              <AddProductOption>하이브</AddProductOption>
-              <AddProductOption>SM</AddProductOption>
-              <AddProductOption>기타</AddProductOption>
+            <AddProductSelect name="ent" onChange={onChange} value={ent}>
+              <AddProductOption value="">필수선택</AddProductOption>
+              {!isEntLoading &&
+                isEntSuccess &&
+                entData?.map((entLi: any) => {
+                  return (
+                    <AddProductOption key={entLi.id} value={entLi.id}>
+                      {entLi.entName}
+                    </AddProductOption>
+                  );
+                })}
             </AddProductSelect>
-            <AddProductInput />
-          </AddProductInputContainer> */}
+            <AddProductInput
+              placeholder="소속사 추가"
+              style={{ marginLeft: "50px" }}
+              name="addEnt"
+              onChange={onChange}
+              value={addEnt}
+            />
+            <AddButton
+              name="addEnt"
+              type="button"
+              onClick={(e) => handleAddOnSubmit(e)}
+            >
+              추가하기
+            </AddButton>
+          </AddProductInputContainer>
         </form>
         <ProductButton
           type="submit"

@@ -334,7 +334,7 @@ export default function Products() {
             alert(
               `${index1 + 1} 번째 행의 ${
                 index + 1
-              }번째 칸이 비어있거나 콤마, 따옴표를 포함하고 있습니다. \r수정 후 다시 업로드해주세요.`,
+              }번째 칸이 비어있거나 콤마, 따옴표를 포함하고 있습니다. \r수정, 삭제 후 다시 업로드해주세요.`,
             );
             arr1.slice(1);
             reset();
