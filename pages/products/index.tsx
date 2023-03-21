@@ -323,7 +323,8 @@ export default function Products() {
     setFile(e.target.files[0]);
   };
   const csvFileToArray = (string: any) => {
-    const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
+    let csvHeader = string.slice(0, string.indexOf("\n")).split(",");
+    csvHeader = csvHeader.map((header: any) => header.trim());
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
     const array1 = csvRows.map((i: any, index1: any) => {
@@ -361,7 +362,7 @@ export default function Products() {
     }
   }, [file]);
   const mutate = useCreateProducts(user?.companyId, arr);
-
+  console.log("arr", arr);
   const handleOnSubmit = (e: any) => {
     e.preventDefault();
     const con = window.confirm("추가 하시겠습니까?");
