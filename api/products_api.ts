@@ -35,7 +35,7 @@ export async function CreateProduct(
     Accept: "application/json",
   };
   const { data } = await axios.post(
-    `http://http://fjvn-api-server-prod-2119653329.ap-northeast-2.elb.amazonaws.com/${companyId}/products`,
+    `http://fjvn-api-server-prod-2119653329.ap-northeast-2.elb.amazonaws.com/${companyId}/products`,
     // `http://localhost:8080/${companyId}/products`,
     JSON.stringify(productdata),
     { headers },
