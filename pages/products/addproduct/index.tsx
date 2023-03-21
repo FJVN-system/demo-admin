@@ -1,9 +1,8 @@
 import styled from "@emotion/styled";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { GetUser } from "../../../api/user_api";
+import { useGetArtists } from "../../../query/artist";
 import { useCreateProduct } from "../../../query/product";
 
 const AddProductContainer = styled.div``;
@@ -59,7 +58,6 @@ const ProductButton = styled.button`
 `;
 
 export default function AddProduct() {
-  const router = useRouter();
   const [inputs, setInputs] = useState({
     title: "",
     barcode: "",
@@ -92,13 +90,20 @@ export default function AddProduct() {
     const { name, value } = e.target;
     const nextInputs = {
       ...inputs,
-      [name]: value, // e.target의 name과 value이다.
+      [name]: value,
     };
 
     setInputs(nextInputs);
   };
   const { data: user, isLoading } = useQuery(["user"], () => GetUser(22));
-  const mutate = useCreateProduct(user?.companyId, inputs);
+  const {
+    data: artistData,
+    isLoading: isArtistLoading,
+    isSuccess: isArtistSuccess,
+  } = useGetArtists(user?.companyId);
+  console.log("artistData", artistData);
+
+  const productMutate = useCreateProduct(user?.companyId, inputs);
 
   const handleOnSubmit = (e: any) => {
     e.preventDefault();
@@ -119,7 +124,7 @@ export default function AddProduct() {
       ) {
         alert("빈칸이 없어야함");
       } else {
-        mutate.mutateAsync();
+        productMutate.mutateAsync();
       }
     }
   };
@@ -140,25 +145,25 @@ export default function AddProduct() {
   };
 
   useEffect(() => {
-    if (mutate.data) {
-      if (mutate.data.errorMessage) {
-        alert(mutate.data.errorMessage);
+    if (productMutate.data) {
+      if (productMutate.data.errorMessage) {
+        alert(productMutate.data.errorMessage);
       } else {
-        // alert(`${mutate.data} 개의 상품이 저장되었습니다`);
+        // alert(`${productMutate.data} 개의 상품이 저장되었습니다`);
       }
     }
-    if (mutate.status === "success") {
-      if (mutate.data.title) {
-        alert(`${mutate.data.title}가 등록되었습니다`);
+    if (productMutate.status === "success") {
+      if (productMutate.data.title) {
+        alert(`${productMutate.data.title}가 등록되었습니다`);
         onReset();
       }
     }
-  }, [mutate.data]);
+  }, [productMutate.data]);
   console.log("input", inputs);
-  console.log("mutate.isError", mutate.isError);
-  console.log("mutate.isLoading", mutate.isLoading);
-  console.log("mutate.data", mutate.data);
-  console.log("mutate.status", mutate.status);
+  console.log("productMutate.isError", productMutate.isError);
+  console.log("productMutate.isLoading", productMutate.isLoading);
+  console.log("productMutate.data", productMutate.data);
+  console.log("productMutate.status", productMutate.status);
 
   return (
     <AddProductContainer>
@@ -277,16 +282,22 @@ export default function AddProduct() {
             />
           </AddProductInputContainer>
           {/* TODO api get 요청 만든 후 작업 */}
-          {/* <AddProductInputContainer>
+          <AddProductInputContainer>
             <AddProductInputText>가수</AddProductInputText>
             <AddProductSelect>
-              <AddProductOption>BTS</AddProductOption>
-              <AddProductOption>에이티즈</AddProductOption>
-              <AddProductOption>마마무</AddProductOption>
+              {!isArtistLoading &&
+                isArtistSuccess &&
+                artistData?.map((artist: any, i: any) => {
+                  return (
+                    <AddProductOption key={`${i + 1}-a`}>
+                      {artist.artistName}
+                    </AddProductOption>
+                  );
+                })}
             </AddProductSelect>
             <AddProductInput />
           </AddProductInputContainer>
-          <AddProductInputContainer>
+          {/* <AddProductInputContainer>
             <AddProductInputText>카테고리</AddProductInputText>
             <AddProductSelect>
               <AddProductOption>음반</AddProductOption>

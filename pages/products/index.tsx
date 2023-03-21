@@ -309,12 +309,14 @@ export default function Products() {
   });
 
   // 파일 업로드
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
   const [arr, setArr] = useState([]);
   const ref = useRef<any>();
 
   const reset = () => {
     ref.current.value = "";
+    setFile(null);
+    setArr([]);
   };
 
   const handleOnChange = (e: any) => {
@@ -324,17 +326,28 @@ export default function Products() {
     const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
     const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
 
-    const array1 = csvRows.map((i: any) => {
+    const array1 = csvRows.map((i: any, index1: any) => {
       const values = i.split(",");
-      const obj = csvHeader.reduce((object: any, header: any, index: any) => {
-        object[header] = values[index];
-        return object;
-      }, {});
+      const obj = csvHeader.reduce(
+        (object: any, header: any, index: any, arr1: any) => {
+          if (values[index].length < 1 || values[index].includes('"')) {
+            alert(
+              `${index1 + 1} 번째 행의 ${
+                index + 1
+              }번째 칸이 비어있거나 콤마, 따옴표를 포함하고 있습니다. \r수정 후 다시 업로드해주세요.`,
+            );
+            arr1.slice(1);
+            reset();
+            return arr1;
+          }
+          object[header] = values[index];
+          return object;
+        },
+        {},
+      );
       return obj;
     });
-    // array1.pop();
     setArr(array1);
-    console.log("array1", array1);
   };
 
   useEffect(() => {
@@ -347,7 +360,6 @@ export default function Products() {
       fileReader.readAsText(file);
     }
   }, [file]);
-  console.log("arr", arr);
   const mutate = useCreateProducts(user?.companyId, arr);
 
   const handleOnSubmit = (e: any) => {
@@ -400,7 +412,7 @@ export default function Products() {
                 onClick={(e) => {
                   handleOnSubmit(e);
                 }}
-                disabled={arr.length < 1 && true}
+                disabled={file === null && true}
               >
                 대량추가
               </ProductButton>
@@ -408,7 +420,6 @@ export default function Products() {
                 <a download href="/example.csv">
                   양식 받기
                 </a>
-                (콤마 쓰면 안됨)
               </ProductButton>
 
               <Fileupload
