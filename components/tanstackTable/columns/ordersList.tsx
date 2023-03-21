@@ -38,7 +38,7 @@ export const ordersListColumns: ColumnDef<any, any>[] = [
     accessorFn: (row) => row.createdAt,
     id: "createdAt",
     header: "가입일",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue()?.substr(0, 10),
     filterFn: "fuzzy",
     sortingFn: fuzzySort,
   },

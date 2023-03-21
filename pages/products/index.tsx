@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import styled from "@emotion/styled";
 import {
   useReactTable,
@@ -13,10 +14,11 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { fuzzyFilter } from "../../components/tanstackTable/filter/fuzzyFilter";
-import { useGetProducts } from "../../query/product";
+import { useCreateProducts, useGetProducts } from "../../query/product";
 import { GetUser } from "../../api/user_api";
 import { productsList } from "../../components/tanstackTable/columns/productsList";
 import Search from "../../components/icons/Search";
@@ -67,6 +69,10 @@ const TopButtonContainer = styled.div`
   align-items: flex-start;
 `;
 
+const TopButtonLeft = styled.div``;
+
+const TopButtonRight = styled.div``;
+
 const ProductButton = styled.button`
   background-color: #2a62ff;
   color: white;
@@ -77,17 +83,26 @@ const ProductButton = styled.button`
   border-radius: 10px;
   margin-bottom: 10px;
   margin-right: 10px;
+  cursor: pointer;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
-const TopButton = styled.div<any>`
-  font-size: larger;
-  font-weight: 700;
-  color: ${(props: any): any => (props.dd ? "#2a62ff" : "gray")};
-  padding: 5px 10px 15px;
-  margin-bottom: -2px;
-  border-bottom: 2px
-    ${(props: any): any => (props.dd ? "#2a62ff" : "transparent")} solid;
+const Fileupload = styled.input`
+  width: 200px;
 `;
+
+// const TopButton = styled.div<any>`
+//   font-size: larger;
+//   font-weight: 700;
+//   color: ${(props: any): any => (props.dd ? "#2a62ff" : "gray")};
+//   padding: 5px 10px 15px;
+//   margin-bottom: -2px;
+//   border-bottom: 2px
+//     ${(props: any): any => (props.dd ? "#2a62ff" : "transparent")} solid;
+// `;
 
 const SearchContainerWrapper = styled.div`
   display: flex;
@@ -292,6 +307,73 @@ export default function Products() {
     debugHeaders: true,
     debugColumns: false,
   });
+
+  // 파일 업로드
+  const [file, setFile] = useState();
+  const [arr, setArr] = useState([]);
+  const ref = useRef<any>();
+
+  const reset = () => {
+    ref.current.value = "";
+  };
+
+  const handleOnChange = (e: any) => {
+    setFile(e.target.files[0]);
+  };
+  const csvFileToArray = (string: any) => {
+    const csvHeader = string.slice(0, string.indexOf("\n")).split(",");
+    const csvRows = string.slice(string.indexOf("\n") + 1).split("\n");
+
+    const array1 = csvRows.map((i: any) => {
+      const values = i.split(",");
+      const obj = csvHeader.reduce((object: any, header: any, index: any) => {
+        object[header] = values[index];
+        return object;
+      }, {});
+      return obj;
+    });
+    // array1.pop();
+    setArr(array1);
+    console.log("array1", array1);
+  };
+
+  useEffect(() => {
+    const fileReader = new FileReader();
+    if (file) {
+      fileReader.onload = (event: any) => {
+        const csvOutput = event.target.result;
+        csvFileToArray(csvOutput);
+      };
+      fileReader.readAsText(file);
+    }
+  }, [file]);
+  console.log("arr", arr);
+  const mutate = useCreateProducts(user?.companyId, arr);
+
+  const handleOnSubmit = (e: any) => {
+    e.preventDefault();
+    const con = window.confirm("추가 하시겠습니까?");
+    if (con) {
+      mutate.mutateAsync();
+    }
+  };
+
+  useEffect(() => {
+    if (mutate.data) {
+      if (mutate.data.errorMessage) {
+        alert(mutate.data.errorMessage);
+      } else {
+        alert(`${mutate.data} 개의 상품이 저장되었습니다`);
+        reset();
+      }
+    }
+  }, [mutate.data]);
+
+  console.log("mutate.isError", mutate.isError);
+  console.log("mutate.isLoading", mutate.isLoading);
+  console.log("mutate.data", mutate.data);
+  console.log("mutate.status", mutate.status);
+
   return (
     <ProductListContainer>
       <TopContainer>
@@ -304,17 +386,47 @@ export default function Products() {
       </TopContainer>
       <TableContainer>
         <TopButtonContainer>
-          <div style={{ display: "flex" }}>
-            <ProductButton type="button">상품추가</ProductButton>
-            <ProductButton type="button">상품삭제</ProductButton>
-            <ProductButton type="button">상품삭제</ProductButton>
-            {/* <TopButton dd>
+          <TopButtonLeft>
+            <Link href="/products/addproduct">
+              <ProductButton type="button">상품추가</ProductButton>
+            </Link>
+            {/* <ProductButton type="button">상품수정</ProductButton>
+            <ProductButton type="button">상품삭제</ProductButton> */}
+          </TopButtonLeft>
+          <TopButtonRight>
+            <form>
+              <ProductButton
+                type="submit"
+                onClick={(e) => {
+                  handleOnSubmit(e);
+                }}
+                disabled={arr.length < 1 && true}
+              >
+                대량추가
+              </ProductButton>
+              <ProductButton>
+                <a download href="/example.csv">
+                  양식 받기
+                </a>
+                (콤마 쓰면 안됨)
+              </ProductButton>
+
+              <Fileupload
+                type="file"
+                id="csvFileInput"
+                accept=".csv"
+                ref={ref}
+                onChange={handleOnChange}
+              />
+            </form>
+          </TopButtonRight>
+
+          {/* <TopButton dd>
               전체 {table.getPrePaginationRowModel().rows.length}
             </TopButton>
             <TopButton dd>CD 2</TopButton>
             <TopButton>GOODS {productData && productData?.length}</TopButton>
             <TopButton>PHOTOBOOK 0</TopButton> */}
-          </div>
         </TopButtonContainer>
         <SearchContainerWrapper>
           <DebouncedInput
